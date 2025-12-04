@@ -1,0 +1,17 @@
+/**
+ * Custom Error Class
+ * Standart hata yönetimi için özel hata sınıfı
+ */
+class AppError extends Error {
+  constructor(message, statusCode) {
+    super(message);
+
+    this.statusCode = statusCode;
+    this.status = `${statusCode}`.startsWith('4') ? 'fail' : 'error';
+    this.isOperational = true;
+
+    Error.captureStackTrace(this, this.constructor);
+  }
+}
+
+module.exports = AppError;
