@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const bcrypt = require('bcrypt');
 
 const userSchema = new mongoose.Schema({
   kullaniciAdi: {
@@ -12,7 +13,8 @@ const userSchema = new mongoose.Schema({
   sifre: {
     type: String,
     required: [true, 'Şifre zorunludur'],
-    minlength: [6, 'Şifre en az 6 karakter olmalıdır']
+    minlength: [6, 'Şifre en az 6 karakter olmalıdır'],
+    select: false // Sorgu sonuçlarında şifreyi otomatik gösterme
   },
   rol: {
     type: String,
@@ -42,5 +44,33 @@ const userSchema = new mongoose.Schema({
 }, {
   timestamps: true
 });
+
+// Şifre hashleme middleware (kayıt ve güncelleme sırasında)
+userSchema.pre('save', async function(next) {
+  // Eğer şifre değiştirilmediyse hash'leme
+  if (!this.isModified('sifre')) {
+    return next();
+  }
+
+  try {
+    const saltRounds = parseInt(process.env.BCRYPT_SALT_ROUNDS) || 10;
+    this.sifre = await bcrypt.hash(this.sifre, saltRounds);
+    next();
+  } catch (error) {
+    next(error);
+  }
+});
+
+// Şifre karşılaştırma metodu
+userSchema.methods.comparePassword = async function(candidatePassword) {
+  return await bcrypt.compare(candidatePassword, this.sifre);
+};
+
+// JSON çıktısında hassas bilgileri gizle
+userSchema.methods.toJSON = function() {
+  const obj = this.toObject();
+  delete obj.sifre;
+  return obj;
+};
 
 module.exports = mongoose.model('User', userSchema);
