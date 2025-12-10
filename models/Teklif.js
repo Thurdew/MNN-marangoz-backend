@@ -64,7 +64,7 @@ const teklifSchema = new mongoose.Schema({
     type: String,
     required: [true, 'Malzeme seçimi zorunludur'],
     enum: {
-      values: ['lamine', 'lake', 'akruk', 'ahsap'],
+      values: ['sunta', 'mdf'],
       message: '{VALUE} geçerli bir malzeme türü değil'
     }
   },

@@ -57,7 +57,7 @@ const teklifValidation = [
   body('malzeme')
     .trim()
     .notEmpty().withMessage('Malzeme seçimi zorunludur')
-    .isIn(['lamine', 'lake', 'akruk', 'ahsap']).withMessage('Geçersiz malzeme türü'),
+    .isIn(['sunta', 'mdf']).withMessage('Geçersiz malzeme türü'),
 
   body('ekOzellikler')
     .optional()
