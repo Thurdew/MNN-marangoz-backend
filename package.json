@@ -8,6 +8,7 @@
     "dev": "cross-env NODE_ENV=development nodemon server.js",
     "dev:win": "set NODE_ENV=development && nodemon server.js",
     "start:win": "set NODE_ENV=production && node server.js",
+    "create-admin": "node scripts/createAdmin.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [
