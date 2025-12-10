@@ -29,12 +29,12 @@ const createAdmin = async () => {
       console.log('\n💡 Yeni admin eklemek isterseniz aşağıdaki bilgileri değiştirin.\n');
     }
 
-    // Admin kullanıcısı oluştur
+    // Admin kullanıcısı oluştur (.env dosyasından bilgileri al)
     const adminData = {
-      kullaniciAdi: 'admin',
-      sifre: 'Admin123!',  // İlk şifre - GİRİŞTEN SONRA DEĞİŞTİRİN!
-      adSoyad: 'Admin User',
-      email: 'admin@mnnmarangoz.com',
+      kullaniciAdi: process.env.ADMIN_USERNAME || 'admin',
+      sifre: process.env.ADMIN_PASSWORD || 'Admin123!',
+      adSoyad: process.env.ADMIN_NAME || 'Admin User',
+      email: process.env.ADMIN_EMAIL || 'admin@mnnmarangoz.com',
       telefon: '5551234567',
       rol: 'admin',
       aktif: true
@@ -42,10 +42,10 @@ const createAdmin = async () => {
 
     console.log('📝 Admin kullanıcısı oluşturuluyor...');
     console.log('   Kullanıcı Adı:', adminData.kullaniciAdi);
-    console.log('   Şifre:', adminData.sifre);
+    console.log('   Şifre:', '****' + adminData.sifre.slice(-4));
     console.log('   Email:', adminData.email);
     console.log('   Rol:', adminData.rol);
-    console.log('\n⚠️  ÖNEMLİ: İlk girişten sonra şifrenizi mutlaka değiştirin!\n');
+    console.log('');
 
     const admin = await User.create(adminData);
 
@@ -53,12 +53,10 @@ const createAdmin = async () => {
     console.log('╔═══════════════════════════════════════════════════╗');
     console.log('║           GİRİŞ BİLGİLERİ                         ║');
     console.log('╠═══════════════════════════════════════════════════╣');
-    console.log('║  Kullanıcı Adı: admin                             ║');
-    console.log('║  Şifre:         Admin123!                         ║');
-    console.log('║  Email:         admin@mnnmarangoz.com             ║');
+    console.log(`║  Kullanıcı Adı: ${adminData.kullaniciAdi.padEnd(34)}║`);
+    console.log(`║  Email:         ${adminData.email.padEnd(34)}║`);
     console.log('╚═══════════════════════════════════════════════════╝');
-    console.log('\n🔐 Giriş yaptıktan sonra /api/users/change-password');
-    console.log('   endpoint\'ini kullanarak şifrenizi değiştirin.\n');
+    console.log('\n🔐 Şifre .env dosyasında güvenli bir şekilde saklanıyor.\n');
 
   } catch (error) {
     if (error.code === 11000) {
