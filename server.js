@@ -18,6 +18,10 @@ const urunRoutes = require('./routes/urunRoutes');
 const galeriRoutes = require('./routes/galeriRoutes');
 const siparisRoutes = require('./routes/siparisRoutes');
 const userRoutes = require('./routes/userRoutes');
+const uploadRoutes = require('./routes/uploadRoutes');
+const settingsRoutes = require('./routes/settingsRoutes');
+const yorumRoutes = require('./routes/yorumRoutes');
+const teklifRoutes = require('./routes/teklifRoutes');
 
 // Error Handling
 const { errorHandler, notFound } = require('./middleware/errorHandler');
@@ -88,6 +92,11 @@ if (process.env.NODE_ENV === 'development') {
 
 connectDB();
 
+// ==================== STATIC FILES ====================
+
+// Serve uploaded files
+app.use('/uploads', express.static('uploads'));
+
 // ==================== API ROUTES ====================
 
 // Health Check
@@ -106,6 +115,10 @@ app.use('/api/urunler', urunRoutes);
 app.use('/api/galeri', galeriRoutes);
 app.use('/api/siparisler', siparisRoutes);
 app.use('/api/users', userRoutes);
+app.use('/api/upload', uploadRoutes);
+app.use('/api/ayarlar', settingsRoutes);
+app.use('/api/yorumlar', yorumRoutes);
+app.use('/api/teklif', teklifRoutes);
 
 // API Documentation (geliştirme için)
 app.get('/api', (req, res) => {
@@ -119,6 +132,10 @@ app.get('/api', (req, res) => {
       galeri: '/api/galeri',
       siparisler: '/api/siparisler',
       users: '/api/users',
+      upload: '/api/upload',
+      ayarlar: '/api/ayarlar',
+      yorumlar: '/api/yorumlar',
+      teklif: '/api/teklif',
       health: '/api/health'
     }
   });
