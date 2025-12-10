@@ -38,3 +38,7 @@ build/
 
 # Misc
 *.pem
+
+# Uploads (keep .gitkeep to track directory)
+uploads/*
+!uploads/.gitkeep
