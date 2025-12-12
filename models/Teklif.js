@@ -38,24 +38,21 @@ const teklifSchema = new mongoose.Schema({
     // enum kaldırıldı - validasyon routes'ta ve controller'da yapılıyor
   },
 
-  // Ölçüler
+  // Ölçüler (metre cinsinden saklanır - frontend cm gönderir, controller dönüştürür)
   genislik: {
     type: Number,
-    required: [true, 'Genişlik zorunludur'],
-    min: [0.1, 'Genişlik en az 0.1 metre olmalıdır'],
-    max: [50, 'Genişlik en fazla 50 metre olabilir']
+    required: [true, 'Genişlik zorunludur']
+    // min/max kaldırıldı - validasyon routes'ta cm bazlı yapılıyor
   },
   yukseklik: {
     type: Number,
-    required: [true, 'Yükseklik zorunludur'],
-    min: [0.1, 'Yükseklik en az 0.1 metre olmalıdır'],
-    max: [50, 'Yükseklik en fazla 50 metre olabilir']
+    required: [true, 'Yükseklik zorunludur']
+    // min/max kaldırıldı - validasyon routes'ta cm bazlı yapılıyor
   },
   derinlik: {
     type: Number,
-    required: [true, 'Derinlik zorunludur'],
-    min: [0.1, 'Derinlik en az 0.1 metre olmalıdır'],
-    max: [50, 'Derinlik en fazla 50 metre olabilir']
+    required: [true, 'Derinlik zorunludur']
+    // min/max kaldırıldı - validasyon routes'ta cm bazlı yapılıyor
   },
 
   // Malzeme ve Özellikler
