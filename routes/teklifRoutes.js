@@ -40,24 +40,24 @@ const teklifValidation = [
   body('hizmet')
     .trim()
     .notEmpty().withMessage('Hizmet türü zorunludur')
-    .isIn(['mutfak', 'gardirop', 'vestiyer', 'tv']).withMessage('Geçersiz hizmet türü'),
+    .isIn(['mutfak', 'gardirop', 'vestiyer', 'tv', 'Mutfak Dolabı', 'Mutfak', 'Gardirop', 'Vestiyer', 'TV Ünitesi', 'TV']).withMessage('Geçersiz hizmet türü'),
 
   body('genislik')
     .notEmpty().withMessage('Genişlik zorunludur')
-    .isFloat({ min: 0.1, max: 50 }).withMessage('Genişlik 0.1-50 metre arasında olmalıdır'),
+    .isFloat({ min: 10, max: 5000 }).withMessage('Genişlik 10-5000 cm arasında olmalıdır'),
 
   body('yukseklik')
     .notEmpty().withMessage('Yükseklik zorunludur')
-    .isFloat({ min: 0.1, max: 50 }).withMessage('Yükseklik 0.1-50 metre arasında olmalıdır'),
+    .isFloat({ min: 10, max: 5000 }).withMessage('Yükseklik 10-5000 cm arasında olmalıdır'),
 
   body('derinlik')
     .notEmpty().withMessage('Derinlik zorunludur')
-    .isFloat({ min: 0.1, max: 50 }).withMessage('Derinlik 0.1-50 metre arasında olmalıdır'),
+    .isFloat({ min: 10, max: 5000 }).withMessage('Derinlik 10-5000 cm arasında olmalıdır'),
 
   body('malzeme')
     .trim()
     .notEmpty().withMessage('Malzeme seçimi zorunludur')
-    .isIn(['sunta', 'mdf']).withMessage('Geçersiz malzeme türü'),
+    .isIn(['sunta', 'mdf', 'Sunta', 'MDF', 'Mdf']).withMessage('Geçersiz malzeme türü'),
 
   body('ekOzellikler')
     .optional()

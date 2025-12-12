@@ -144,7 +144,7 @@ const createTeklif = async (req, res) => {
       });
     }
 
-    const {
+    let {
       adSoyad,
       email,
       telefon,
@@ -158,6 +158,29 @@ const createTeklif = async (req, res) => {
       cekmeceAdedi,
       notlar
     } = req.body;
+
+    // ============================================
+    // VERİ DÖNÜŞÜMLERİ (Frontend formatından DB formatına)
+    // ============================================
+
+    // 1. Hizmet adını normalize et
+    const hizmetMap = {
+      'Mutfak Dolabı': 'mutfak',
+      'Mutfak': 'mutfak',
+      'Gardirop': 'gardirop',
+      'Vestiyer': 'vestiyer',
+      'TV Ünitesi': 'tv',
+      'TV': 'tv'
+    };
+    hizmet = hizmetMap[hizmet] || hizmet.toLowerCase();
+
+    // 2. Ölçüleri cm'den metre'ye çevir (frontend cm gönderiyor)
+    genislik = parseFloat(genislik) / 100;
+    yukseklik = parseFloat(yukseklik) / 100;
+    derinlik = parseFloat(derinlik) / 100;
+
+    // 3. Malzemeyi lowercase yap
+    malzeme = malzeme.toLowerCase();
 
     // Fiyatı hesapla
     const fiyatDetay = await hesaplaFiyat({
