@@ -33,10 +33,9 @@ const teklifSchema = new mongoose.Schema({
   hizmet: {
     type: String,
     required: [true, 'Hizmet türü zorunludur'],
-    enum: {
-      values: ['mutfak', 'gardirop', 'vestiyer', 'tv'],
-      message: '{VALUE} geçerli bir hizmet türü değil'
-    }
+    lowercase: true,
+    trim: true
+    // enum kaldırıldı - validasyon routes'ta ve controller'da yapılıyor
   },
 
   // Ölçüler
@@ -63,10 +62,9 @@ const teklifSchema = new mongoose.Schema({
   malzeme: {
     type: String,
     required: [true, 'Malzeme seçimi zorunludur'],
-    enum: {
-      values: ['sunta', 'mdf'],
-      message: '{VALUE} geçerli bir malzeme türü değil'
-    }
+    lowercase: true,
+    trim: true
+    // enum kaldırıldı - validasyon routes'ta ve controller'da yapılıyor
   },
   ekOzellikler: {
     type: [String],
