@@ -58,10 +58,14 @@ const hesaplaFiyat = async (teklifData) => {
 
 // @desc    Teklifleri getir
 // @route   GET /api/teklif
-// @access  Private (Admin only - auth middleware eklenebilir)
+// @access  Private (Admin only)
 const getTeklifler = async (req, res) => {
   try {
+    console.log('📥 GET /api/teklif - Teklifler getiriliyor...');
+    console.log('👤 Kullanıcı:', req.user?.email, '| Rol:', req.user?.rol);
+
     const { limit, durum } = req.query;
+    console.log('🔍 Query parametreleri:', { limit, durum });
 
     // Query oluştur
     let query = {};
@@ -83,6 +87,7 @@ const getTeklifler = async (req, res) => {
     }
 
     const teklifler = await teklifQuery;
+    console.log('✅ Veritabanından çekilen teklif sayısı:', teklifler.length);
 
     res.status(200).json({
       success: true,
@@ -90,7 +95,7 @@ const getTeklifler = async (req, res) => {
       data: teklifler
     });
   } catch (error) {
-    console.error('Teklifler getirilirken hata:', error);
+    console.error('❌ Teklifler getirilirken hata:', error);
     res.status(500).json({
       success: false,
       message: 'Teklifler getirilirken bir hata oluştu',
@@ -134,9 +139,13 @@ const getTeklif = async (req, res) => {
 // @access  Public
 const createTeklif = async (req, res) => {
   try {
+    console.log('📝 POST /api/teklif - Yeni teklif oluşturuluyor...');
+    console.log('📦 Request body:', JSON.stringify(req.body, null, 2));
+
     // Validasyon hatalarını kontrol et
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
+      console.log('❌ Validasyon hatası:', errors.array());
       return res.status(400).json({
         success: false,
         message: 'Validasyon hatası',
@@ -209,13 +218,16 @@ const createTeklif = async (req, res) => {
       durum: 'beklemede'
     });
 
+    console.log('✅ Teklif başarıyla oluşturuldu:', yeniTeklif._id);
+    console.log('💰 Toplam Fiyat:', fiyatDetay.toplamFiyat, 'TL');
+
     res.status(201).json({
       success: true,
       message: 'Teklif talebiniz başarıyla gönderildi. En kısa sürede size dönüş yapacağız.',
       data: yeniTeklif
     });
   } catch (error) {
-    console.error('Teklif oluşturulurken hata:', error);
+    console.error('❌ Teklif oluşturulurken hata:', error);
     res.status(500).json({
       success: false,
       message: 'Teklif oluşturulurken bir hata oluştu',

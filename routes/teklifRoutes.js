@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { body } = require('express-validator');
+const { protect, adminOnly } = require('../middleware/auth');
 const {
   getTeklifler,
   getTeklif,
@@ -83,13 +84,13 @@ const teklifValidation = [
 
 // @route   GET /api/teklif
 // @desc    Teklifleri getir
-// @access  Private (Admin only - auth middleware eklenebilir)
-router.get('/', getTeklifler);
+// @access  Private (Admin only)
+router.get('/', protect, adminOnly, getTeklifler);
 
 // @route   GET /api/teklif/:id
 // @desc    Tek teklif getir
-// @access  Private (Admin only - auth middleware eklenebilir)
-router.get('/:id', getTeklif);
+// @access  Private (Admin only)
+router.get('/:id', protect, adminOnly, getTeklif);
 
 // @route   POST /api/teklif
 // @desc    Yeni teklif oluştur
@@ -98,12 +99,12 @@ router.post('/', teklifValidation, createTeklif);
 
 // @route   PATCH /api/teklif/:id/status
 // @desc    Teklif durumunu güncelle
-// @access  Private (Admin only - auth middleware eklenebilir)
-router.patch('/:id/status', updateTeklifStatus);
+// @access  Private (Admin only)
+router.patch('/:id/status', protect, adminOnly, updateTeklifStatus);
 
 // @route   DELETE /api/teklif/:id
 // @desc    Teklifi sil
-// @access  Private (Admin only - auth middleware eklenebilir)
-router.delete('/:id', deleteTeklif);
+// @access  Private (Admin only)
+router.delete('/:id', protect, adminOnly, deleteTeklif);
 
 module.exports = router;
