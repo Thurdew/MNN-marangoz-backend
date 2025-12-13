@@ -66,14 +66,20 @@ exports.getUrun = asyncHandler(async (req, res, next) => {
  * @access  Private/Admin
  */
 exports.createUrun = asyncHandler(async (req, res, next) => {
+  console.log('📝 POST /api/urunler - Yeni ürün oluşturuluyor...');
+  console.log('👤 Kullanıcı:', req.user?.email, '| Rol:', req.user?.rol);
+  console.log('📦 Request body:', JSON.stringify(req.body, null, 2));
+
   // Aynı kod ile ürün var mı kontrol et
   const existingUrun = await Urun.findOne({ kod: req.body.kod });
 
   if (existingUrun) {
+    console.log('❌ Ürün kodu zaten kullanımda:', req.body.kod);
     return next(new AppError('Bu ürün kodu zaten kullanımda', 400));
   }
 
   const yeniUrun = await Urun.create(req.body);
+  console.log('✅ Ürün başarıyla oluşturuldu:', yeniUrun._id);
 
   successResponse(res, 201, 'Ürün başarıyla eklendi', yeniUrun);
 });

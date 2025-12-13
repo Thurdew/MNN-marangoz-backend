@@ -57,7 +57,12 @@ exports.getGaleriItem = asyncHandler(async (req, res, next) => {
  * @access  Private/Admin
  */
 exports.createGaleriItem = asyncHandler(async (req, res, next) => {
+  console.log('📝 POST /api/galeri - Yeni galeri öğesi oluşturuluyor...');
+  console.log('👤 Kullanıcı:', req.user?.email, '| Rol:', req.user?.rol);
+  console.log('📦 Request body:', JSON.stringify(req.body, null, 2));
+
   const yeniGaleriOgesi = await Galeri.create(req.body);
+  console.log('✅ Galeri öğesi başarıyla oluşturuldu:', yeniGaleriOgesi._id);
 
   successResponse(res, 201, 'İş galeriye başarıyla eklendi', yeniGaleriOgesi);
 });
