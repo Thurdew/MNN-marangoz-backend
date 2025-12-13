@@ -30,10 +30,19 @@ exports.getAllGaleri = asyncHandler(async (req, res, next) => {
   // Toplam sayıyı al
   const total = await Galeri.countDocuments(filter);
 
-  // Response gönder
-  const responseData = paginationResponse(galeriOgeleri, total, pageNum, limitNum);
-
-  successResponse(res, 200, 'Galeri öğeleri başarıyla getirildi', responseData);
+  // Response gönder - Direkt format (iç içe data objesi olmaması için)
+  res.status(200).json({
+    success: true,
+    data: galeriOgeleri,
+    pagination: {
+      total,
+      page: pageNum,
+      limit: limitNum,
+      totalPages: Math.ceil(total / limitNum),
+      hasNextPage: pageNum < Math.ceil(total / limitNum),
+      hasPrevPage: pageNum > 1
+    }
+  });
 });
 
 /**
@@ -118,7 +127,17 @@ exports.getGaleriByKategori = asyncHandler(async (req, res, next) => {
 
   const total = await Galeri.countDocuments({ kategori });
 
-  const responseData = paginationResponse(galeriOgeleri, total, pageNum, limitNum);
-
-  successResponse(res, 200, `${kategori} kategorisindeki işler getirildi`, responseData);
+  // Response gönder - Direkt format
+  res.status(200).json({
+    success: true,
+    data: galeriOgeleri,
+    pagination: {
+      total,
+      page: pageNum,
+      limit: limitNum,
+      totalPages: Math.ceil(total / limitNum),
+      hasNextPage: pageNum < Math.ceil(total / limitNum),
+      hasPrevPage: pageNum > 1
+    }
+  });
 });

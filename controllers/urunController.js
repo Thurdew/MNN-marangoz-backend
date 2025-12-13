@@ -39,10 +39,19 @@ exports.getAllUrunler = asyncHandler(async (req, res, next) => {
   // Toplam sayıyı al
   const total = await Urun.countDocuments(filter);
 
-  // Response gönder
-  const responseData = paginationResponse(urunler, total, pageNum, limitNum);
-
-  successResponse(res, 200, 'Ürünler başarıyla getirildi', responseData);
+  // Response gönder - Direkt format (iç içe data objesi olmaması için)
+  res.status(200).json({
+    success: true,
+    data: urunler,
+    pagination: {
+      total,
+      page: pageNum,
+      limit: limitNum,
+      totalPages: Math.ceil(total / limitNum),
+      hasNextPage: pageNum < Math.ceil(total / limitNum),
+      hasPrevPage: pageNum > 1
+    }
+  });
 });
 
 /**
@@ -142,7 +151,17 @@ exports.getUrunlerByKategori = asyncHandler(async (req, res, next) => {
 
   const total = await Urun.countDocuments({ kategori });
 
-  const responseData = paginationResponse(urunler, total, pageNum, limitNum);
-
-  successResponse(res, 200, `${kategori} kategorisindeki ürünler getirildi`, responseData);
+  // Response gönder - Direkt format
+  res.status(200).json({
+    success: true,
+    data: urunler,
+    pagination: {
+      total,
+      page: pageNum,
+      limit: limitNum,
+      totalPages: Math.ceil(total / limitNum),
+      hasNextPage: pageNum < Math.ceil(total / limitNum),
+      hasPrevPage: pageNum > 1
+    }
+  });
 });

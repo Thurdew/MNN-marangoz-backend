@@ -52,10 +52,19 @@ exports.getAllSiparisler = asyncHandler(async (req, res, next) => {
   // Toplam sayıyı al
   const total = await Siparis.countDocuments(filter);
 
-  // Response gönder
-  const responseData = paginationResponse(siparisler, total, pageNum, limitNum);
-
-  successResponse(res, 200, 'Siparişler başarıyla getirildi', responseData);
+  // Response gönder - Direkt format (iç içe data objesi olmaması için)
+  res.status(200).json({
+    success: true,
+    data: siparisler,
+    pagination: {
+      total,
+      page: pageNum,
+      limit: limitNum,
+      totalPages: Math.ceil(total / limitNum),
+      hasNextPage: pageNum < Math.ceil(total / limitNum),
+      hasPrevPage: pageNum > 1
+    }
+  });
 });
 
 /**
@@ -160,9 +169,19 @@ exports.getSiparislerByDurum = asyncHandler(async (req, res, next) => {
 
   const total = await Siparis.countDocuments({ durum });
 
-  const responseData = paginationResponse(siparisler, total, pageNum, limitNum);
-
-  successResponse(res, 200, `${durum} durumundaki siparişler getirildi`, responseData);
+  // Response gönder - Direkt format
+  res.status(200).json({
+    success: true,
+    data: siparisler,
+    pagination: {
+      total,
+      page: pageNum,
+      limit: limitNum,
+      totalPages: Math.ceil(total / limitNum),
+      hasNextPage: pageNum < Math.ceil(total / limitNum),
+      hasPrevPage: pageNum > 1
+    }
+  });
 });
 
 /**
