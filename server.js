@@ -33,7 +33,17 @@ const app = express();
 // ==================== GÜVENLIK MIDDLEWARE ====================
 
 // Helmet - HTTP güvenlik başlıkları
-app.use(helmet());
+// Development'ta CSP'yi devre dışı bırak, production'da özelleştir
+app.use(helmet({
+  contentSecurityPolicy: process.env.NODE_ENV === 'production' ? {
+    directives: {
+      ...helmet.contentSecurityPolicy.getDefaultDirectives(),
+      "img-src": ["'self'", "data:", "http://localhost:3000", "http://localhost:5000"],
+      "connect-src": ["'self'", "http://localhost:3000", "http://localhost:5000"],
+    },
+  } : false, // Development'ta CSP kapalı
+  crossOriginResourcePolicy: { policy: "cross-origin" }, // CORS için gerekli
+}));
 
 // CORS - Cross-Origin Resource Sharing
 const corsOptions = {
