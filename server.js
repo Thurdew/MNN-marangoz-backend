@@ -94,8 +94,13 @@ connectDB();
 
 // ==================== STATIC FILES ====================
 
-// Serve uploaded files
-app.use('/uploads', express.static('uploads'));
+// Serve uploaded files with CORS headers
+app.use('/uploads', (req, res, next) => {
+  res.header('Access-Control-Allow-Origin', process.env.FRONTEND_URL || '*');
+  res.header('Access-Control-Allow-Methods', 'GET');
+  res.header('Access-Control-Allow-Headers', 'Content-Type');
+  next();
+}, express.static('uploads'));
 
 // ==================== API ROUTES ====================
 
