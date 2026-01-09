@@ -30,64 +30,50 @@ const { errorHandler, notFound } = require('./middleware/errorHandler');
 
 const app = express();
 
-// ==================== GÜVENLIK MIDDLEWARE ====================
+// ==================== GÜVENLİK MIDDLEWARE ====================
 
-// Helmet - HTTP güvenlik başlıkları
-if (process.env.NODE_ENV === 'production') {
-  app.use(helmet({
-    contentSecurityPolicy: {
-      directives: {
-        ...helmet.contentSecurityPolicy.getDefaultDirectives(),
-        "img-src": ["'self'", "data:", "http://localhost:3000", "http://localhost:5000"],
-        "connect-src": ["'self'", "http://localhost:3000", "http://localhost:5000"],
-      },
-    },
+// Helmet - HTTP güvenlik başlıklarını yapılandırıyoruz
+// Canlıda (production) resim ve API isteklerinin engellenmemesi için ayarlandı
+app.use(helmet({
+    contentSecurityPolicy: false, 
     crossOriginResourcePolicy: { policy: "cross-origin" },
-  }));
-} else {
-  // Development: Cross-origin policy'leri kapat
-  app.use(helmet({
-    contentSecurityPolicy: false,
-    crossOriginEmbedderPolicy: false,
-    crossOriginOpenerPolicy: false,
-    crossOriginResourcePolicy: false,
-  }));
-}
+}));
 
-// CORS - Cross-Origin Resource Sharing
+// CORS - Vercel ve Lokal erişim izinleri
+const allowedOrigins = [
+    'https://mnn-seven.vercel.app', // Sizin Vercel linkiniz
+    'http://localhost:3000'         // Kendi bilgisayarınızda test için
+];
+
 const corsOptions = {
-  origin: process.env.FRONTEND_URL || '*',
-  credentials: true,
-  optionsSuccessStatus: 200
+    origin: function (origin, callback) {
+        // origin yoksa (mobil uygulama veya araçlar) veya allowedOrigins içindeyse izin ver
+        if (!origin || allowedOrigins.indexOf(origin) !== -1) {
+            callback(null, true);
+        } else {
+            callback(new Error('CORS politikası bu kaynağa izin vermiyor.'));
+        }
+    },
+    credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization']
 };
+
 app.use(cors(corsOptions));
 
-// Rate Limiting - DDoS ve brute force koruması
+// Rate Limiting - Korumalar
 const limiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 dakika
-  max: 100, // IP başına maksimum 100 istek
-  message: {
-    success: false,
-    message: 'Çok fazla istek gönderdiniz. Lütfen 15 dakika sonra tekrar deneyin.'
-  },
-  standardHeaders: true,
-  legacyHeaders: false
+    windowMs: 15 * 60 * 1000, 
+    max: 200, // IP başına limiti biraz artırdık (hata almamak için)
+    message: {
+        success: false,
+        message: 'Çok fazla istek gönderdiniz. Lütfen bir süre sonra tekrar deneyin.'
+    },
+    standardHeaders: true,
+    legacyHeaders: false
 });
 
 app.use('/api/', limiter);
-
-const authLimiter = rateLimit({
-  windowMs: 15 * 60 * 1000,
-  max: 5,
-  skipSuccessfulRequests: true,
-  message: {
-    success: false,
-    message: 'Çok fazla başarısız giriş denemesi. Lütfen 15 dakika sonra tekrar deneyin.'
-  }
-});
-
-app.use('/api/auth/login', authLimiter);
-app.use('/api/auth/register', authLimiter);
 
 // ==================== GENEL MIDDLEWARE ====================
 
@@ -96,33 +82,29 @@ app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 app.use(compression());
 
 if (process.env.NODE_ENV === 'development') {
-  app.use(morgan('dev'));
+    app.use(morgan('dev'));
 } else {
-  app.use(morgan('combined'));
+    app.use(morgan('combined'));
 }
 
 // ==================== DATABASE CONNECTION ====================
 
 connectDB();
 
-// ==================== STATIC FILES ====================
+// ==================== STATIC FILES (Resimler) ====================
 
-app.use('/uploads', (req, res, next) => {
-  res.header('Access-Control-Allow-Origin', process.env.FRONTEND_URL || '*');
-  res.header('Access-Control-Allow-Methods', 'GET');
-  res.header('Access-Control-Allow-Headers', 'Content-Type');
-  next();
-}, express.static('uploads'));
+// uploads klasörüne her yerden erişim izni veriyoruz (CORS)
+app.use('/uploads', cors(), express.static('uploads'));
 
 // ==================== API ROUTES ====================
 
 app.get('/api/health', (req, res) => {
-  res.status(200).json({
-    success: true,
-    message: 'Server çalışıyor',
-    timestamp: new Date(),
-    environment: process.env.NODE_ENV || 'development'
-  });
+    res.status(200).json({
+        success: true,
+        message: 'Server çalışıyor',
+        timestamp: new Date(),
+        environment: process.env.NODE_ENV || 'development'
+    });
 });
 
 app.use('/api/auth', authRoutes);
@@ -136,23 +118,16 @@ app.use('/api/yorumlar', yorumRoutes);
 app.use('/api/teklif', teklifRoutes);
 
 app.get('/api', (req, res) => {
-  res.status(200).json({
-    success: true,
-    message: 'MNN Marangoz Backend API',
-    version: '2.0.0',
-    endpoints: {
-      auth: '/api/auth',
-      urunler: '/api/urunler',
-      galeri: '/api/galeri',
-      siparisler: '/api/siparisler',
-      users: '/api/users',
-      upload: '/api/upload',
-      ayarlar: '/api/ayarlar',
-      yorumlar: '/api/yorumlar',
-      teklif: '/api/teklif',
-      health: '/api/health'
-    }
-  });
+    res.status(200).json({
+        success: true,
+        message: 'MNN Marangoz Backend API',
+        endpoints: {
+            auth: '/api/auth',
+            urunler: '/api/urunler',
+            teklif: '/api/teklif',
+            yorumlar: '/api/yorumlar'
+        }
+    });
 });
 
 // ==================== ERROR HANDLING ====================
@@ -165,22 +140,12 @@ app.use(errorHandler);
 const PORT = process.env.PORT || 5000;
 
 const server = app.listen(PORT, () => {
-  console.log(`🚀 Server running on port ${PORT}`);
+    console.log(`🚀 Server running on port ${PORT}`);
 });
 
 process.on('unhandledRejection', (err) => {
-  console.error('❌ UNHANDLED REJECTION! Shutting down...');
-  console.error(err.name, err.message);
-  server.close(() => {
-    process.exit(1);
-  });
-});
-
-process.on('SIGTERM', () => {
-  console.log('👋 SIGTERM received. Shutting down...');
-  server.close(() => {
-    console.log('✅ Server closed');
-  });
+    console.error('❌ UNHANDLED REJECTION!', err.message);
+    server.close(() => process.exit(1));
 });
 
 module.exports = app;
